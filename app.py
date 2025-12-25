@@ -4,109 +4,88 @@ from groq import Groq
 
 # ==========================================
 # 🛑 AREA KONFIGURASI API KEY GROQ
-# Tempel API Key Groq Anda di sini:
 GROQ_API_KEY = "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"
 # ==========================================
 
 # --- 1. KONFIGURASI HALAMAN ---
 st.set_page_config(
-    page_title="Enigma Laptop AI",
-    page_icon="💻",
-    layout="wide" # Layout wide agar chat lebih luas
+    page_title="Enigma Laptop Zone",
+    page_icon="🏢",
+    layout="wide"
 )
 
-# --- 2. LOAD DATA (DI BELAKANG LAYAR) ---
-# Data tetap di-load agar bot pintar, tapi tidak ditampilkan di sidebar
+# --- 2. LOAD DATA ---
 try:
     df = pd.read_csv("data_laptop.csv")
 except FileNotFoundError:
     st.error("⚠️ File data_laptop.csv tidak ditemukan!")
     st.stop()
 
-# --- 3. SIDEBAR YANG BARU & KEREN ---
+# --- 3. SIDEBAR (INFORMASI TOKO) ---
 with st.sidebar:
-    # Header Profil
-    st.title("💻 Enigma Zone")
-    st.caption("AI Assistant Toko Laptop Enigma")
+    st.title("🏢 Enigma Laptop")
+    st.caption("Solusi Laptop Terlengkap & Termurah")
+    
     st.markdown("---")
-
-    # Fitur Reset Chat
-    st.subheader("🛠️ Kontrol")
-    if st.button("🗑️ Hapus Riwayat Chat", use_container_width=True):
+    
+    # Informasi Jam Operasional
+    st.subheader("🕒 Jam Operasional")
+    st.markdown("""
+    **Senin - Jumat:** 09:00 - 20:00 WIB  
+    
+    **Sabtu - Minggu:** 10:00 - 18:00 WIB
+    """)
+    
+    st.markdown("---")
+    
+    # Informasi Kontak & Lokasi
+    st.subheader("📍 Lokasi & Kontak")
+    st.markdown("""
+    **Alamat:** Jl. Raya Banaran, Sekaran, Kec. Gn. Pati, Kota Semarang, Jawa Tengah 50229
+    
+    **WhatsApp Admin:** 0812-2946-7136
+    """)
+    
+    st.markdown("---")
+    
+    # Tombol Reset Chat (Tetap penting agar bisa demo ulang)
+    if st.button("🔄 Mulai Chat Baru", use_container_width=True):
         st.session_state.messages = []
-        st.session_state.messages.append({"role": "assistant", "content": "Halo! Riwayat chat sudah dibersihkan. Ada yang bisa saya bantu?"})
         st.rerun()
 
-    # Pengaturan Parameter AI
-    st.subheader("🎛️ Pengaturan AI")
-    
-    # Pilihan Model (Bonus Fitur)
-    model_option = st.selectbox(
-        "Pilih Model:",
-        ("llama3-70b-8192", "llama3-8b-8192", "mixtral-8x7b-32768"),
-        index=0,
-        help="70b lebih pintar, 8b lebih cepat."
-    )
-    
-    # Slider Kreativitas (Temperature)
-    creativity = st.slider(
-        "Tingkat Kreativitas:", 
-        min_value=0.0, 
-        max_value=1.0, 
-        value=0.5, 
-        step=0.1,
-        help="0.0 = Jawaban kaku/tepat data. 1.0 = Jawaban lebih variatif."
-    )
+    st.info("💡 Tips: Tanyakan laptop berdasarkan budget atau kebutuhan (coding/gaming/desain).")
 
-    st.markdown("---")
-    
-    # Footer / About
-    with st.expander("ℹ️ Tentang Sistem Ini"):
-        st.markdown("""
-        **Teknologi:**
-        - UI: Streamlit
-        - LLM: Meta Llama 3
-        - API: Groq Cloud
-        
-        **Fitur:**
-        - Cek Stok Real-time
-        - Rekomendasi Cerdas
-        """)
-        st.caption("© 2025 UAS Project")
+# --- 4. AREA CHAT UTAMA ---
+st.header("👋 Selamat Datang di Enigma Laptop Zone")
+st.write("Saya Joko asisten virtual toko. Silakan tanya stok atau minta rekomendasi laptop!")
 
-# --- 4. AREA UTAMA (CHAT) ---
-st.header("🤖 Tanya Stok & Rekomendasi Laptop")
-st.write("Selamat datang! Silakan tanya spesifikasi, harga, atau minta saran laptop.")
-
-# Inisialisasi History jika belum ada
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Halo! Saya AI Enigma. Mau cari laptop gaming, kantor, atau kuliah?"}
+        {"role": "assistant", "content": "Halo! Ada yang bisa saya bantu carikan hari ini? Kami punya promo menarik untuk laptop Gaming dan Ultrabook."}
     ]
 
-# Tampilkan Chat
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
 # --- 5. FUNGSI OTAK AI ---
-def get_groq_response(user_query, data, temp, model_id):
+def get_groq_response(user_query, data):
     client = Groq(api_key=GROQ_API_KEY)
     
     data_str = data.to_string(index=False)
     
     system_prompt = f"""
-    Kamu adalah Sales Assistant profesional untuk 'Toko Laptop Enigma'.
+    Kamu adalah Customer Service profesional untuk 'Toko Laptop Enigma'.
     
-    DATABASE PRODUK:
+    DATABASE STOK HARI INI:
     {data_str}
     
-    INSTRUKSI:
-    1. Jawab ramah dan persuasif (seperti sales asli).
-    2. Wajib merujuk ke DATABASE PRODUK di atas.
-    3. Jika user tanya laptop yang tidak ada di list, tawarkan alternatif yang mirip dari list.
-    4. Format jawaban gunakan Markdown (bold untuk Nama Laptop dan Harga).
-    5. Jangan sebutkan ID produk.
+    PANDUAN MENJAWAB:
+    1. Gaya bahasa: Ramah, membantu, dan persuasif (Sales).
+    2. WAJIB merujuk ke DATABASE STOK di atas.
+    3. Jika user bertanya "Rekomendasi laptop budget X", cari harga yang mendekati di database.
+    4. Jika stok habis atau tidak ada di data, katakan dengan sopan dan tawarkan alternatif.
+    5. Jangan mengarang spesifikasi yang tidak ada di data.
     """
     
     try:
@@ -115,30 +94,28 @@ def get_groq_response(user_query, data, temp, model_id):
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_query}
             ],
-            model=model_id,
-            temperature=temp, # Mengikuti slider di sidebar
+            # Saya kunci menggunakan model terbaik & stabil saat ini
+            model="llama-3.3-70b-versatile", 
+            temperature=0.6, # Kreativitas seimbang (tidak terlalu kaku, tidak ngawur)
         )
         return completion.choices[0].message.content
     except Exception as e:
-        return f"Error API: {e}"
+        return f"Error API: {e}. Cek koneksi internet atau API Key Anda."
 
-# --- 6. INPUT USER & PROSES ---
-if prompt := st.chat_input("Contoh: Laptop 5 jutaan buat skripsi..."):
+# --- 6. INPUT USER ---
+if prompt := st.chat_input("Misal: Laptop gaming budget 15 juta..."):
     # Cek API Key
     if "GANTI_TULISAN" in GROQ_API_KEY:
-        st.error("⚠️ API Key belum diisi di kodingan!")
+        st.error("⚠️ API Key belum diisi di baris 8!")
         st.stop()
 
-    # Tampilkan input user
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Proses AI
     with st.chat_message("assistant"):
-        with st.spinner("Sedang mengetik..."):
-            # Mengirim parameter dari sidebar (creativity & model_option) ke fungsi
-            response = get_groq_response(prompt, df, creativity, model_option)
+        with st.spinner("Mengecek ketersediaan stok..."):
+            response = get_groq_response(prompt, df)
             st.markdown(response)
             
     st.session_state.messages.append({"role": "assistant", "content": response})
