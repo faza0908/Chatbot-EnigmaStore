@@ -32,7 +32,7 @@ with st.sidebar:
 def get_response(user_query, api_key, data):
     # Konfigurasi API
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-1.5-flash-latest')
     
     # Prompt Engineering (Instruksi Utama untuk AI)
     # Kita menyuapkan data CSV sebagai string ke dalam prompt
