@@ -1,97 +1,144 @@
 import streamlit as st
 import pandas as pd
-import google.generativeai as genai
+from groq import Groq
 
 # ==========================================
-# 🛑 AREA KONFIGURASI API KEY (HARDCODE)
-# Tempel API Key Anda di dalam tanda kutip di bawah ini:
-GOOGLE_API_KEY = "AIzaSyBOwPpqcP7oS6PnNKlipg8TpNIDhLusy3o"
+# 🛑 AREA KONFIGURASI API KEY GROQ
+# Tempel API Key Groq Anda di sini:
+GROQ_API_KEY = "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"
 # ==========================================
 
-# --- KONFIGURASI HALAMAN ---
+# --- 1. KONFIGURASI HALAMAN ---
 st.set_page_config(
-    page_title="Enigma Laptop Chatbot",
+    page_title="Enigma Laptop AI",
     page_icon="💻",
-    layout="centered"
+    layout="wide" # Layout wide agar chat lebih luas
 )
 
-# --- JUDUL & SIDEBAR ---
-st.title("🤖 CS Toko Laptop Enigma")
-st.write("Langsung tanya saja, tidak perlu input Key lagi!")
+# --- 2. LOAD DATA (DI BELAKANG LAYAR) ---
+# Data tetap di-load agar bot pintar, tapi tidak ditampilkan di sidebar
+try:
+    df = pd.read_csv("data_laptop.csv")
+except FileNotFoundError:
+    st.error("⚠️ File data_laptop.csv tidak ditemukan!")
+    st.stop()
 
+# --- 3. SIDEBAR YANG BARU & KEREN ---
+with st.sidebar:
+    # Header Profil
+    st.title("💻 Enigma Zone")
+    st.caption("AI Assistant Toko Laptop Enigma")
+    st.markdown("---")
 
-# --- FUNGSI AI ---
-def get_response(user_query, data):
-    # Menggunakan API Key yang sudah di-hardcode di atas
-    genai.configure(api_key=GOOGLE_API_KEY)
-    
-    # Pilih Model
-    # Jika 'gemini-1.5-flash' masih error 404, ubah teks di bawah menjadi 'gemini-pro'
-    model_name = 'gemini-1.5-flash' 
-    
-    try:
-        model = genai.GenerativeModel(model_name)
-    except:
-        # Fallback jika model flash bermasalah
-        model = genai.GenerativeModel('gemini-pro')
+    # Fitur Reset Chat
+    st.subheader("🛠️ Kontrol")
+    if st.button("🗑️ Hapus Riwayat Chat", use_container_width=True):
+        st.session_state.messages = []
+        st.session_state.messages.append({"role": "assistant", "content": "Halo! Riwayat chat sudah dibersihkan. Ada yang bisa saya bantu?"})
+        st.rerun()
 
-    # Siapkan Data
-    data_str = data.to_string(index=False)
+    # Pengaturan Parameter AI
+    st.subheader("🎛️ Pengaturan AI")
     
-    # Instruksi Utama (System Prompt)
-    system_prompt = f"""
-    Kamu adalah asisten Customer Service untuk 'Toko Laptop Enigma'.
-    Tugasmu adalah menjawab pertanyaan pelanggan berdasarkan DATA STOK berikut:
+    # Pilihan Model (Bonus Fitur)
+    model_option = st.selectbox(
+        "Pilih Model:",
+        ("llama3-70b-8192", "llama3-8b-8192", "mixtral-8x7b-32768"),
+        index=0,
+        help="70b lebih pintar, 8b lebih cepat."
+    )
     
-    {data_str}
-    
-    Aturan menjawab:
-    1. Jawab dengan sopan, santai, tapi tetap profesional.
-    2. HANYA rekomendasikan laptop yang ada di data stok di atas.
-    3. Jika user tanya laptop yang tidak ada di data, katakan stok kosong.
-    4. Jika user tanya rekomendasi (misal: budget 10 juta), cari yang harganya mendekati di data.
-    5. Jika user menawar harga, tolak dengan halus.
-    
-    Pertanyaan User: {user_query}
-    """
-    
-    try:
-        response = model.generate_content(system_prompt)
-        return response.text
-    except Exception as e:
-        return f"Error: {e}. Cek apakah API Key sudah benar disalin."
+    # Slider Kreativitas (Temperature)
+    creativity = st.slider(
+        "Tingkat Kreativitas:", 
+        min_value=0.0, 
+        max_value=1.0, 
+        value=0.5, 
+        step=0.1,
+        help="0.0 = Jawaban kaku/tepat data. 1.0 = Jawaban lebih variatif."
+    )
 
-# --- LOGIKA CHATBOT ---
+    st.markdown("---")
+    
+    # Footer / About
+    with st.expander("ℹ️ Tentang Sistem Ini"):
+        st.markdown("""
+        **Teknologi:**
+        - UI: Streamlit
+        - LLM: Meta Llama 3
+        - API: Groq Cloud
+        
+        **Fitur:**
+        - Cek Stok Real-time
+        - Rekomendasi Cerdas
+        """)
+        st.caption("© 2025 UAS Project")
 
-# 1. Inisialisasi History Chat
+# --- 4. AREA UTAMA (CHAT) ---
+st.header("🤖 Tanya Stok & Rekomendasi Laptop")
+st.write("Selamat datang! Silakan tanya spesifikasi, harga, atau minta saran laptop.")
+
+# Inisialisasi History jika belum ada
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Halo! Saya bot Enigma. Cari laptop spek apa kak?"}
+        {"role": "assistant", "content": "Halo! Saya AI Enigma. Mau cari laptop gaming, kantor, atau kuliah?"}
     ]
 
-# 2. Tampilkan Chat Terdahulu
+# Tampilkan Chat
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# 3. Input User
-if prompt := st.chat_input("Ketik pesan Anda di sini..."):
+# --- 5. FUNGSI OTAK AI ---
+def get_groq_response(user_query, data, temp, model_id):
+    client = Groq(api_key=GROQ_API_KEY)
     
-    # Cek apakah user lupa mengganti tulisan API Key
-    if GOOGLE_API_KEY == "AIzaSyBOwPpqcP7oS6PnNKlipg8TpNIDhLusy3o":
-        st.error("⚠️ Kamu belum memasukkan API Key di baris 8 file app.py!")
+    data_str = data.to_string(index=False)
+    
+    system_prompt = f"""
+    Kamu adalah Sales Assistant profesional untuk 'Toko Laptop Enigma'.
+    
+    DATABASE PRODUK:
+    {data_str}
+    
+    INSTRUKSI:
+    1. Jawab ramah dan persuasif (seperti sales asli).
+    2. Wajib merujuk ke DATABASE PRODUK di atas.
+    3. Jika user tanya laptop yang tidak ada di list, tawarkan alternatif yang mirip dari list.
+    4. Format jawaban gunakan Markdown (bold untuk Nama Laptop dan Harga).
+    5. Jangan sebutkan ID produk.
+    """
+    
+    try:
+        completion = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_query}
+            ],
+            model=model_id,
+            temperature=temp, # Mengikuti slider di sidebar
+        )
+        return completion.choices[0].message.content
+    except Exception as e:
+        return f"Error API: {e}"
+
+# --- 6. INPUT USER & PROSES ---
+if prompt := st.chat_input("Contoh: Laptop 5 jutaan buat skripsi..."):
+    # Cek API Key
+    if "GANTI_TULISAN" in GROQ_API_KEY:
+        st.error("⚠️ API Key belum diisi di kodingan!")
         st.stop()
 
-    # Tampilkan pesan user
+    # Tampilkan input user
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Proses jawaban AI
+    # Proses AI
     with st.chat_message("assistant"):
-        with st.spinner("Sedang mengecek stok..."):
-            response = get_response(prompt, df)
+        with st.spinner("Sedang mengetik..."):
+            # Mengirim parameter dari sidebar (creativity & model_option) ke fungsi
+            response = get_groq_response(prompt, df, creativity, model_option)
             st.markdown(response)
             
-    # Simpan jawaban AI ke history
     st.session_state.messages.append({"role": "assistant", "content": response})
