@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import google.generativeai as genai
 
+api_key = "AIzaSyD0dyAVo9-4Osl3VSR6MUdgOb_tF0wFmQE"
 # --- KONFIGURASI HALAMAN ---
 st.set_page_config(
     page_title="Enigma Laptop Chatbot",
