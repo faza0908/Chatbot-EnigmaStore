@@ -23,7 +23,7 @@ st.write("Langsung tanya saja, tidak perlu input Key lagi!")
 # --- FUNGSI AI ---
 def get_response(user_query, data):
     # Menggunakan API Key yang sudah di-hardcode di atas
-    genai.configure(api_key=AIzaSyD0dyAVo9-4Osl3VSR6MUdgOb_tF0wFmQE)
+    genai.configure(api_key=GOOGLE_API_KEY)
     
     # Pilih Model
     # Jika 'gemini-1.5-flash' masih error 404, ubah teks di bawah menjadi 'gemini-pro'
