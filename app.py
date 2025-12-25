@@ -19,20 +19,11 @@ st.set_page_config(
 st.title("🤖 CS Toko Laptop Enigma")
 st.write("Langsung tanya saja, tidak perlu input Key lagi!")
 
-with st.sidebar:
-    st.subheader("📦 Data Stok Toko")
-    # Load Data
-    try:
-        df = pd.read_csv("data_laptop.csv")
-        st.dataframe(df[['Merk', 'Model', 'Harga']], hide_index=True)
-    except FileNotFoundError:
-        st.error("File data_laptop.csv tidak ditemukan!")
-        st.stop()
 
 # --- FUNGSI AI ---
 def get_response(user_query, data):
     # Menggunakan API Key yang sudah di-hardcode di atas
-    genai.configure(api_key=GOOGLE_API_KEY)
+    genai.configure(api_key=AIzaSyD0dyAVo9-4Osl3VSR6MUdgOb_tF0wFmQE)
     
     # Pilih Model
     # Jika 'gemini-1.5-flash' masih error 404, ubah teks di bawah menjadi 'gemini-pro'
@@ -87,7 +78,7 @@ for message in st.session_state.messages:
 if prompt := st.chat_input("Ketik pesan Anda di sini..."):
     
     # Cek apakah user lupa mengganti tulisan API Key
-    if GOOGLE_API_KEY == "GANTI_TULISAN_INI_DENGAN_KODE_API_KEY_PANJANG_ANDA":
+    if GOOGLE_API_KEY == "AIzaSyD0dyAVo9-4Osl3VSR6MUdgOb_tF0wFmQE":
         st.error("⚠️ Kamu belum memasukkan API Key di baris 8 file app.py!")
         st.stop()
 
