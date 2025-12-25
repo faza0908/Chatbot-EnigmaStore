@@ -2,7 +2,12 @@ import streamlit as st
 import pandas as pd
 import google.generativeai as genai
 
-api_key = "AIzaSyD0dyAVo9-4Osl3VSR6MUdgOb_tF0wFmQE"
+# ==========================================
+# 🛑 AREA KONFIGURASI API KEY (HARDCODE)
+# Tempel API Key Anda di dalam tanda kutip di bawah ini:
+GOOGLE_API_KEY = "AIzaSyD0dyAVo9-4Osl3VSR6MUdgOb_tF0wFmQE"
+# ==========================================
+
 # --- KONFIGURASI HALAMAN ---
 st.set_page_config(
     page_title="Enigma Laptop Chatbot",
@@ -12,15 +17,10 @@ st.set_page_config(
 
 # --- JUDUL & SIDEBAR ---
 st.title("🤖 CS Toko Laptop Enigma")
-st.write("Tanyakan spesifikasi, rekomendasi, atau stok laptop di sini!")
+st.write("Langsung tanya saja, tidak perlu input Key lagi!")
 
 with st.sidebar:
-    st.header("⚙️ Konfigurasi")
-    api_key = st.text_input("Masukkan Gemini API Key:", type="password")
-    st.info("Dapatkan key di aistudio.google.com")
-    st.divider()
     st.subheader("📦 Data Stok Toko")
-    
     # Load Data
     try:
         df = pd.read_csv("data_laptop.csv")
@@ -30,15 +30,24 @@ with st.sidebar:
         st.stop()
 
 # --- FUNGSI AI ---
-def get_response(user_query, api_key, data):
-    # Konfigurasi API
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-pro')
+def get_response(user_query, data):
+    # Menggunakan API Key yang sudah di-hardcode di atas
+    genai.configure(api_key=GOOGLE_API_KEY)
     
-    # Prompt Engineering (Instruksi Utama untuk AI)
-    # Kita menyuapkan data CSV sebagai string ke dalam prompt
+    # Pilih Model
+    # Jika 'gemini-1.5-flash' masih error 404, ubah teks di bawah menjadi 'gemini-pro'
+    model_name = 'gemini-1.5-flash' 
+    
+    try:
+        model = genai.GenerativeModel(model_name)
+    except:
+        # Fallback jika model flash bermasalah
+        model = genai.GenerativeModel('gemini-pro')
+
+    # Siapkan Data
     data_str = data.to_string(index=False)
     
+    # Instruksi Utama (System Prompt)
     system_prompt = f"""
     Kamu adalah asisten Customer Service untuk 'Toko Laptop Enigma'.
     Tugasmu adalah menjawab pertanyaan pelanggan berdasarkan DATA STOK berikut:
@@ -46,11 +55,11 @@ def get_response(user_query, api_key, data):
     {data_str}
     
     Aturan menjawab:
-    1. Jawab dengan sopan dan ramah.
+    1. Jawab dengan sopan, santai, tapi tetap profesional.
     2. HANYA rekomendasikan laptop yang ada di data stok di atas.
     3. Jika user tanya laptop yang tidak ada di data, katakan stok kosong.
     4. Jika user tanya rekomendasi (misal: budget 10 juta), cari yang harganya mendekati di data.
-    5. Jawab dalam Bahasa Indonesia yang baik.
+    5. Jika user menawar harga, tolak dengan halus.
     
     Pertanyaan User: {user_query}
     """
@@ -59,14 +68,14 @@ def get_response(user_query, api_key, data):
         response = model.generate_content(system_prompt)
         return response.text
     except Exception as e:
-        return f"Error: {e}. Cek API Key kamu."
+        return f"Error: {e}. Cek apakah API Key sudah benar disalin."
 
 # --- LOGIKA CHATBOT ---
 
 # 1. Inisialisasi History Chat
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Halo! Selamat datang di Enigma Laptop Zone. Ada yang bisa saya bantu cari hari ini?"}
+        {"role": "assistant", "content": "Halo! Saya bot Enigma. Cari laptop spek apa kak?"}
     ]
 
 # 2. Tampilkan Chat Terdahulu
@@ -77,11 +86,11 @@ for message in st.session_state.messages:
 # 3. Input User
 if prompt := st.chat_input("Ketik pesan Anda di sini..."):
     
-    # Cek apakah API Key sudah diisi
-    if not api_key:
-        st.warning("⚠️ Mohon masukkan API Key di menu sebelah kiri terlebih dahulu.")
+    # Cek apakah user lupa mengganti tulisan API Key
+    if GOOGLE_API_KEY == "GANTI_TULISAN_INI_DENGAN_KODE_API_KEY_PANJANG_ANDA":
+        st.error("⚠️ Kamu belum memasukkan API Key di baris 8 file app.py!")
         st.stop()
-        
+
     # Tampilkan pesan user
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
@@ -90,7 +99,7 @@ if prompt := st.chat_input("Ketik pesan Anda di sini..."):
     # Proses jawaban AI
     with st.chat_message("assistant"):
         with st.spinner("Sedang mengecek stok..."):
-            response = get_response(prompt, api_key, df)
+            response = get_response(prompt, df)
             st.markdown(response)
             
     # Simpan jawaban AI ke history
