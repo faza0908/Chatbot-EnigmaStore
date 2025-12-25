@@ -18,7 +18,6 @@ with st.sidebar:
     api_key = st.text_input("Masukkan Gemini API Key:", type="password")
     st.info("Dapatkan key di aistudio.google.com")
     st.divider()
-    st.subheader("📦 Data Stok Toko")
     
     # Load Data
     try:
