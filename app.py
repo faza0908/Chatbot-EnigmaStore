@@ -19,13 +19,6 @@ with st.sidebar:
     st.info("Dapatkan key di aistudio.google.com")
     st.divider()
     
-    # Load Data
-    try:
-        df = pd.read_csv("data_laptop.csv")
-        st.dataframe(df[['Merk', 'Model', 'Harga']], hide_index=True)
-    except FileNotFoundError:
-        st.error("File data_laptop.csv tidak ditemukan!")
-        st.stop()
 
 # --- FUNGSI AI ---
 def get_response(user_query, api_key, data):
