@@ -5,7 +5,7 @@ import google.generativeai as genai
 # ==========================================
 # 🛑 AREA KONFIGURASI API KEY (HARDCODE)
 # Tempel API Key Anda di dalam tanda kutip di bawah ini:
-GOOGLE_API_KEY = "AIzaSyD0dyAVo9-4Osl3VSR6MUdgOb_tF0wFmQE"
+GOOGLE_API_KEY = "AIzaSyBOwPpqcP7oS6PnNKlipg8TpNIDhLusy3o"
 # ==========================================
 
 # --- KONFIGURASI HALAMAN ---
@@ -78,7 +78,7 @@ for message in st.session_state.messages:
 if prompt := st.chat_input("Ketik pesan Anda di sini..."):
     
     # Cek apakah user lupa mengganti tulisan API Key
-    if GOOGLE_API_KEY == "AIzaSyD0dyAVo9-4Osl3VSR6MUdgOb_tF0wFmQE":
+    if GOOGLE_API_KEY == "AIzaSyBOwPpqcP7oS6PnNKlipg8TpNIDhLusy3o":
         st.error("⚠️ Kamu belum memasukkan API Key di baris 8 file app.py!")
         st.stop()
 
