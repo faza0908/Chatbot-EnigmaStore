@@ -1,0 +1,26 @@
+ID,Merk,Model,Kategori,Prosesor,RAM,Storage,GPU,Harga,Stok,Keterangan
+1,Asus,ROG Strix G15,Gaming,Ryzen 7 6800H,16GB,512GB SSD,RTX 3050,15.500.000,5,Layar 144Hz RGB Keyboard 4-Zone
+2,Lenovo,Legion 5 Pro,Gaming,Core i7-12700H,32GB,1TB SSD,RTX 3070Ti,24.500.000,3,Layar WQHD+ 165Hz Sistem pendingin Coldfront 4.0
+3,HP,Pavilion Aero 13,Ultrabook,Ryzen 5 5600U,16GB,512GB SSD,Radeon Graphics,10.500.000,8,Berat di bawah 1kg sangat ringan chassis magnesium
+4,Acer,Aspire 5 Slim,Office,Core i5-1135G7,8GB,512GB SSD,Intel Iris Xe,7.800.000,10,Cocok untuk mahasiswa baterai awet upgradeable RAM
+5,Apple,MacBook Air M1,Ultrabook,Apple M1 Chip,8GB,256GB SSD,7-core GPU,11.500.000,4,Baterai tahan 18 jam layar Retina fanless design
+6,MSI,Modern 14,Office,Core i3-1115G4,8GB,256GB SSD,Intel UHD,6.200.000,12,Laptop budget terbaik desain tipis military grade
+7,Asus,TUF Gaming F15,Gaming,Core i5-11400H,16GB,512GB SSD,RTX 2050,10.900.000,7,Tahan banting sertifikasi militer keyboard backlit
+8,Lenovo,IdeaPad Slim 3,Student,Ryzen 3 7320U,8GB,256GB SSD,Radeon 610M,5.400.000,15,Harga terjangkau cocok untuk skripsi dan browsing
+9,Acer,Nitro V 15,Gaming,Core i5-13420H,8GB,512GB SSD,RTX 4050,13.200.000,6,Laptop gaming entry level terbaik performa kencang
+10,HP,Spectre x360,Convertible,Core i7-1355U,16GB,1TB SSD,Intel Iris Xe,26.000.000,2,Layar OLED touchscreen bisa dilipat jadi tablet include stylus
+11,Dell,XPS 13 Plus,Ultrabook,Core i7-1360P,16GB,1TB SSD,Intel Iris Xe,29.500.000,2,Desain futuristik trackpad invisible layar 4K
+12,Asus,ZenBook 14 OLED,Ultrabook,Ryzen 7 7730U,16GB,1TB SSD,Radeon Graphics,14.500.000,5,Layar OLED jernih banget warna akurat 100% DCI-P3
+13,Axioo,Pongo 760,Gaming,Core i7-12650H,16GB,512GB SSD,RTX 4060,15.999.000,4,Laptop lokal spek dewa harga miring
+14,Advan,Workplus,Office,Ryzen 5 6600H,16GB,512GB SSD,Radeon 660M,6.999.000,10,Price to performance terbaik layar 16:10 metal body
+15,Apple,MacBook Pro M2 Pro,Creative,M2 Pro Chip,16GB,512GB SSD,16-core GPU,32.000.000,2,Untuk video editing profesional render cepat layar XDR
+16,Lenovo,ThinkPad X1 Carbon,Business,Core i7-1355U,16GB,1TB SSD,Intel Iris Xe,35.000.000,1,Laptop para CEO sangat ringan keyboard legendaris keamanan tinggi
+17,MSI,Titan GT77,Gaming,Core i9-13980HX,64GB,4TB SSD,RTX 4090,65.000.000,1,Laptop monster pengganti desktop keyboard mekanikal Cherry MX
+18,Asus,VivoBook Pro 15,Creator,Ryzen 7 5800H,16GB,512GB SSD,RTX 3050,12.500.000,6,Layar OLED 120Hz cocok untuk desain grafis pemula
+19,HP,Victus 15,Gaming,Ryzen 5 7640HS,16GB,512GB SSD,RTX 4050,14.200.000,5,Desain minimalis tidak terlalu mencolok gaming tapi elegan
+20,Acer,Swift Go 14,Ultrabook,Core i5-13500H,16GB,512GB SSD,Intel Iris Xe,11.800.000,7,Kamera QHD bagus untuk Zoom meeting ringan dibawa
+21,Lenovo,Yoga 7i,Convertible,Core i5-1340P,16GB,512GB SSD,Intel Iris Xe,16.500.000,4,Engsel 360 derajat audio Dolby Atmos build quality premium
+22,Dell,G15 Gaming,Gaming,Ryzen 7 7840HS,16GB,512GB SSD,RTX 4060,17.500.000,3,Inspirasi desain dari Alienware pendinginan bagus
+23,MSI,Cyborg 15,Gaming,Core i5-12450H,8GB,512GB SSD,RTX 4050,11.500.000,8,Translucent body unik ringan untuk ukuran laptop gaming
+24,Zyrex,Kintamani,Office,AMD APU A9,4GB,128GB SSD,Radeon R5,3.500.000,15,Laptop termurah untuk ketik dokumen ringan buatan lokal
+25,Razer,Blade 14,Gaming,Ryzen 9 7940HS,16GB,1TB SSD,RTX 4070,38.000.000,1,MacBook versi Windows Gaming body CNC Aluminum hitam
