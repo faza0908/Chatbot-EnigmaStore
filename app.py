@@ -4,7 +4,7 @@ from groq import Groq
 
 # ==========================================
 # 🛑 AREA KONFIGURASI API KEY GROQ
-GROQ_API_KEY = "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"
+GROQ_API_KEY = "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"
 # ==========================================
 
 # --- 1. KONFIGURASI HALAMAN ---
