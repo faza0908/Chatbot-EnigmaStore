@@ -9,8 +9,7 @@ from groq import Groq
 #    1) .streamlit/secrets.toml -> GROQ_API_KEY = "gsk_xxx"
 #    2) environment variable GROQ_API_KEY
 # ==========================================
-GROQ_API_KEY = st.secrets.get("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", os.environ.get("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", ""))
-
+GROQ_API_KEY = "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"
 # --- 1. KONFIGURASI HALAMAN ---
 st.set_page_config(
     page_title="Laptop Zone",
