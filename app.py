@@ -1,11 +1,15 @@
 import streamlit as st
 import pandas as pd
+import os
 from groq import Groq
 
 # ==========================================
-# 🛑 AREA KONFIGURASI API KEY GROQ
-GROQ_API_KEY = "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"
+# 🔐 API KEY GROQ — diambil dari st.secrets / environment variable
+#    Jangan taruh key langsung di kode. Isi salah satu:
+#    1) .streamlit/secrets.toml -> GROQ_API_KEY = "gsk_xxx"
+#    2) environment variable GROQ_API_KEY
 # ==========================================
+GROQ_API_KEY = st.secrets.get("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", os.environ.get("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", ""))
 
 # --- 1. KONFIGURASI HALAMAN ---
 st.set_page_config(
@@ -14,164 +18,182 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- 2. TEMA VISUAL LIGHT: NAVY + CYAN (ALA DASHBOARD) ---
-CI4_CSS = """
+# --- 2. TEMA VISUAL: GLASSMORPHISM DARK-PURPLE (samain dengan Churn Prediction Web) ---
+GLASS_CSS = """
 <style>
-    :root{
-        --navy: #1B3B6D;
-        --navy-dark: #14294F;
-        --accent-blue: #116BFF;
-        --cyan: #17C3E0;
-        --cyan-dark: #0FA8C4;
-        --bg-page: #F5F7FC;
-        --bg-card: #FFFFFF;
-        --border: #E7ECF5;
-        --sidebar-active-bg: #EFF4FF;
-        --badge-green: #178755;
-        --text-muted: #8A93A6;
-    }
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
-    /* Latar utama */
-    .stApp {
-        background-color: var(--bg-page);
-        color: var(--navy);
-        font-family: "Segoe UI", "Helvetica Neue", sans-serif;
-    }
+*, html, body, [class*="css"] { font-family: 'Sora', sans-serif !important; }
+#MainMenu, footer, header { visibility: hidden; }
+.block-container { padding: 0 2.5rem 2rem 2.5rem !important; max-width: 1280px !important; }
 
-    /* Top bar custom ala dashboard */
-    .topbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background-color: var(--bg-card);
-        border-bottom: 1px solid var(--border);
-        border-top: 3px solid var(--navy-dark);
-        padding: 12px 24px;
-        margin: -1rem -1rem 1.2rem -1rem;
-        border-radius: 0 0 10px 10px;
-        box-shadow: 0 2px 6px rgba(20,41,79,0.05);
-    }
-    .topbar-left { display:flex; align-items:center; gap:14px; }
-    .topbar-logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:22px; color: var(--navy); }
-    .topbar-logo span.icon { font-size: 22px; }
-    .topbar-right { display:flex; align-items:center; gap:18px; }
-    .topbar-icon { position:relative; font-size:18px; color: var(--navy); }
-    .topbar-badge {
-        position:absolute; top:-8px; right:-10px; font-size:10px; color:#fff;
-        border-radius: 999px; padding: 1px 5px; font-weight:700;
-    }
-    .badge-blue { background-color: var(--accent-blue); }
-    .badge-green { background-color: var(--badge-green); }
-    .topbar-user { display:flex; align-items:center; gap:8px; font-weight:600; color: var(--navy); font-size: 14px; }
-    .topbar-avatar {
-        width:30px; height:30px; border-radius:50%; background: var(--sidebar-active-bg);
-        display:flex; align-items:center; justify-content:center; font-size:16px;
-    }
+.stApp {
+    background: #0a0612 !important;
+    background-image:
+        radial-gradient(ellipse 80% 60% at 10% 0%,  #2d1b6944 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 90% 10%, #5b21b622 0%, transparent 55%),
+        radial-gradient(ellipse 40% 40% at 50% 90%, #1e0b4422 0%, transparent 50%) !important;
+    color: #e2d9f3 !important;
+}
 
-    /* Judul & heading */
-    h1, h2, h3 {
-        color: var(--navy) !important;
-        font-weight: 800 !important;
-    }
+/* Header banner (pengganti topbar lama) */
+.header-wrap {
+    background: linear-gradient(135deg, rgba(109,40,217,.18) 0%, rgba(76,29,149,.10) 100%);
+    border: 1px solid rgba(139,92,246,.25); border-radius: 16px;
+    padding: 1.6rem 2rem; margin: 1.4rem 0 1.8rem 0;
+    backdrop-filter: blur(12px);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: .8rem;
+}
+.brand-row { display: flex; align-items: center; gap: .9rem; }
+.brand-icon {
+    width: 42px; height: 42px; border-radius: 10px;
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; box-shadow: 0 0 18px #7c3aed66;
+}
+.brand-name { font-size: 1.15rem; font-weight: 700; color: #f5f0ff; letter-spacing: -.02em; }
+.brand-sub  { font-size: .7rem; color: #7c5bba; margin-top: .15rem; }
+.badge {
+    font-size: .68rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+    padding: .3rem .8rem; border-radius: 99px;
+    background: rgba(124,58,237,.2); border: 1px solid rgba(139,92,246,.4); color: #c4b5fd;
+}
+.header-icons { display: flex; align-items: center; gap: 1rem; }
+.hi-item { position: relative; font-size: 1.05rem; color: #c4b5fd; }
+.hi-dot {
+    position: absolute; top: -6px; right: -8px; width: 8px; height: 8px; border-radius: 50%;
+}
+.dot-blue  { background: #7c3aed; box-shadow: 0 0 6px #7c3aed; }
+.dot-green { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+.hi-user {
+    display: flex; align-items: center; gap: .5rem; font-size: .8rem; font-weight: 600; color: #e9d5ff;
+}
+.hi-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(124,58,237,.2); border: 1px solid rgba(139,92,246,.4);
+    display: flex; align-items: center; justify-content: center; font-size: .9rem;
+}
 
-    /* Sidebar */
-    section[data-testid="stSidebar"] {
-        background-color: var(--bg-card);
-        border-right: 1px solid var(--border);
-    }
-    section[data-testid="stSidebar"] * {
-        color: var(--navy) !important;
-    }
-    section[data-testid="stSidebar"] h1 {
-        color: var(--navy) !important;
-        font-weight: 800 !important;
-    }
-    section[data-testid="stSidebar"] h3 {
-        color: var(--navy) !important;
-        border-bottom: 1px solid var(--border);
-        padding-bottom: 4px;
-    }
+/* Headings */
+h1, h2, h3, h4 { color: #f5f0ff !important; font-weight: 700 !important; }
 
-    /* Tombol ala pill cyan */
-    .stButton > button {
-        background-color: var(--cyan) !important;
-        color: #FFFFFF !important;
-        border: none !important;
-        border-radius: 20px !important;
-        font-weight: 600 !important;
-        padding: 6px 18px !important;
-        transition: background-color 0.2s ease-in-out;
-        box-shadow: 0 2px 6px rgba(23,195,224,0.35);
-    }
-    .stButton > button:hover {
-        background-color: var(--cyan-dark) !important;
-        color: #FFFFFF !important;
-    }
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background: #0d0818 !important;
+    border-right: 1px solid rgba(139,92,246,.18) !important;
+}
+section[data-testid="stSidebar"] * { color: #e2d9f3 !important; }
+section[data-testid="stSidebar"] h1 { color: #f5f0ff !important; font-weight: 700 !important; }
+section[data-testid="stSidebar"] h3 {
+    color: #c4b5fd !important; font-size: .82rem !important;
+    text-transform: uppercase !important; letter-spacing: .07em !important;
+    border-bottom: 1px solid rgba(139,92,246,.18); padding-bottom: .35rem;
+}
+section[data-testid="stSidebar"] hr { border-color: rgba(139,92,246,.18) !important; }
 
-    /* Info box */
-    div[data-testid="stAlert"] {
-        background-color: var(--sidebar-active-bg) !important;
-        border-left: 4px solid var(--accent-blue) !important;
-        color: var(--navy) !important;
-        border-radius: 8px;
-    }
+/* Buttons */
+.stButton > button {
+    background: linear-gradient(135deg, #7c3aed, #9333ea) !important;
+    color: #fff !important; border: none !important; border-radius: 999px !important;
+    font-size: .82rem !important; font-weight: 600 !important; padding: .55rem 1.4rem !important;
+    box-shadow: 0 4px 15px rgba(124,58,237,.35) !important; transition: all .2s !important;
+}
+.stButton > button:hover { transform: translateY(-1px) !important; box-shadow: 0 6px 20px rgba(124,58,237,.5) !important; }
 
-    /* Chat bubble - assistant */
-    div[data-testid="stChatMessage"]:has(div[data-testid="stChatMessageAvatarAssistant"]) {
-        background-color: var(--bg-card);
-        border: 1px solid var(--border);
-        border-left: 4px solid var(--navy);
-        border-radius: 12px;
-        padding: 10px 14px;
-        box-shadow: 0 1px 4px rgba(20,41,79,0.05);
-    }
+/* Alerts */
+div[data-testid="stAlert"] {
+    background: rgba(124,58,237,.10) !important;
+    border-left: 4px solid #7c3aed !important;
+    border-radius: 10px !important; color: #e2d9f3 !important;
+    backdrop-filter: blur(8px) !important;
+}
 
-    /* Chat bubble - user */
-    div[data-testid="stChatMessage"]:has(div[data-testid="stChatMessageAvatarUser"]) {
-        background-color: var(--sidebar-active-bg);
-        border: 1px solid var(--border);
-        border-right: 4px solid var(--cyan);
-        border-radius: 12px;
-        padding: 10px 14px;
-    }
+/* Chat bubbles */
+div[data-testid="stChatMessage"] {
+    background: rgba(255,255,255,.04) !important;
+    border: 1px solid rgba(139,92,246,.18) !important;
+    border-radius: 14px !important;
+    padding: .3rem .4rem !important;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 10px rgba(0,0,0,.2);
+}
+div[data-testid="stChatMessage"]:has(div[data-testid="stChatMessageAvatarAssistant"]) {
+    border-left: 3px solid #7c3aed !important;
+}
+div[data-testid="stChatMessage"]:has(div[data-testid="stChatMessageAvatarUser"]) {
+    background: rgba(124,58,237,.08) !important;
+    border-right: 3px solid #a855f7 !important;
+}
+div[data-testid="stChatMessage"] p { color: #e2d9f3 !important; }
 
-    /* Input chat di bawah */
-    div[data-testid="stChatInput"] {
-        border: 1.5px solid var(--border) !important;
-        border-radius: 10px !important;
-        background-color: var(--bg-card) !important;
-        box-shadow: 0 1px 4px rgba(20,41,79,0.06);
-    }
-    div[data-testid="stChatInput"] textarea {
-        color: var(--navy) !important;
-    }
+/* Chat input */
+div[data-testid="stChatInput"] {
+    background: rgba(30, 15, 60, 0.85) !important;
+    border: 1px solid rgba(139,92,246,.35) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 12px rgba(124,58,237,.15);
+}
+div[data-testid="stChatInput"] textarea {
+    color: #e2d9f3 !important;
+    caret-color: #c4b5fd !important;
+}
+div[data-testid="stChatInput"] textarea::placeholder { color: #7c5bba !important; opacity: 1 !important; }
 
-    /* Caption & teks kecil */
-    .stCaption, [data-testid="stCaptionContainer"] {
-        color: var(--text-muted) !important;
-    }
+/* Caption & small text */
+.stCaption, [data-testid="stCaptionContainer"] { color: #7c5bba !important; }
 
-    /* Divider */
-    hr {
-        border-color: var(--border) !important;
-    }
+/* Section label (dipakai buat memisahkan info) */
+.sec-label {
+    font-size: .65rem; text-transform: uppercase; letter-spacing: .12em;
+    color: #6b4fa0; border-bottom: 1px solid rgba(139,92,246,.18);
+    padding-bottom: .35rem; margin: 1.2rem 0 .8rem 0;
+    display: flex; align-items: center; gap: .5rem;
+}
+.sec-label::before {
+    content: ''; display: inline-block; width: 3px; height: 12px; border-radius: 2px;
+    background: linear-gradient(#7c3aed, #a855f7);
+}
+
+/* Glass info card (dipakai di sidebar utk jam operasional / lokasi) */
+.gcard {
+    background: rgba(255,255,255,.04); border: 1px solid rgba(139,92,246,.18);
+    border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: .7rem;
+    backdrop-filter: blur(8px); transition: border-color .2s, transform .2s;
+    font-size: .82rem; color: #c4b5fd; line-height: 1.7;
+}
+.gcard:hover { border-color: rgba(139,92,246,.4); }
+.gcard b { color: #f5f0ff; }
+
+/* Divider */
+hr { border-color: rgba(139,92,246,.18) !important; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #3b1d7a; border-radius: 3px; }
 </style>
 
-<div class="topbar">
-    <div class="topbar-left">
-        <div class="topbar-logo"><span class="icon">💻</span> Laptop Zone</div>
+<div class="header-wrap">
+    <div class="brand-row">
+        <div class="brand-icon">💻</div>
+        <div>
+            <div class="brand-name">Laptop Zone</div>
+            <div class="brand-sub">Customer Service · AI Sales Assistant</div>
+        </div>
     </div>
-    <div class="topbar-right">
-        <div class="topbar-icon">🔔<span class="topbar-badge badge-blue">•</span></div>
-        <div class="topbar-icon">💬<span class="topbar-badge badge-green">•</span></div>
-        <div class="topbar-user">
-            <div class="topbar-avatar">🙂</div>
+    <div class="header-icons">
+        <span class="hi-item">🔔<span class="hi-dot dot-blue"></span></span>
+        <span class="hi-item">💬<span class="hi-dot dot-green"></span></span>
+        <div class="hi-user">
+            <div class="hi-avatar">🙂</div>
             Tamu (guest)
         </div>
+        <span class="badge">Groq · Llama 3.3 70B</span>
     </div>
 </div>
 """
-st.markdown(CI4_CSS, unsafe_allow_html=True)
+st.markdown(GLASS_CSS, unsafe_allow_html=True)
 
 # --- 3. LOAD DATA ---
 try:
@@ -187,35 +209,33 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # Informasi Jam Operasional
     st.subheader("🕒 Jam Operasional")
     st.markdown("""
-    **Senin - Jumat:** 09:00 - 20:00 WIB  
+    <div class="gcard">
+        <b>Senin – Jumat:</b> 09:00 – 20:00 WIB<br><br>
+        <b>Sabtu – Minggu:</b> 10:00 – 18:00 WIB
+    </div>
+    """, unsafe_allow_html=True)
 
-    **Sabtu - Minggu:** 10:00 - 18:00 WIB
-    """)
-
-    st.markdown("---")
-
-    # Informasi Kontak & Lokasi
     st.subheader("📍 Lokasi & Kontak")
     st.markdown("""
-    **Alamat:** Jl. Arjuna, Pendrikan Kidul, Kec. Semarang Tengah, Kota Semarang, Jawa Tengah 50229
-
-    **WhatsApp Admin:** 0812-2946-7136
-    """)
+    <div class="gcard">
+        <b>Alamat:</b><br>Jl. Arjuna, Pendrikan Kidul, Kec. Semarang Tengah,
+        Kota Semarang, Jawa Tengah 50229<br><br>
+        <b>WhatsApp Admin:</b> 0812-2946-7136
+    </div>
+    """, unsafe_allow_html=True)
 
     st.markdown("---")
 
-    # Tombol Reset Chat (Tetap penting agar bisa demo ulang)
     if st.button("🔄 Mulai Chat Baru", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
     st.info("💡 Tips: Tanyakan laptop berdasarkan budget atau kebutuhan (coding/gaming/desain).")
 
 # --- 5. AREA CHAT UTAMA ---
-st.markdown("#### 👋 Selamat Datang di Enigma Laptop Zone")
-st.write("Saya Joko asisten virtual toko. Silakan tanya stok atau minta rekomendasi laptop!")
+st.markdown("<div class='sec-label'>👋 Selamat Datang di Enigma Laptop Zone</div>", unsafe_allow_html=True)
+st.write("Saya Joko, asisten virtual toko. Silakan tanya stok atau minta rekomendasi laptop!")
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
@@ -252,9 +272,8 @@ def get_groq_response(user_query, data):
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_query}
             ],
-            # Saya kunci menggunakan model terbaik & stabil saat ini
             model="llama-3.3-70b-versatile",
-            temperature=0.6,  # Kreativitas seimbang (tidak terlalu kaku, tidak ngawur)
+            temperature=0.6,
         )
         return completion.choices[0].message.content
     except Exception as e:
@@ -262,9 +281,8 @@ def get_groq_response(user_query, data):
 
 # --- 7. INPUT USER ---
 if prompt := st.chat_input("Misal: Laptop gaming budget 15 juta..."):
-    # Cek API Key
-    if "GANTI_TULISAN" in GROQ_API_KEY:
-        st.error("⚠️ API Key belum diisi di baris 8!")
+    if not GROQ_API_KEY:
+        st.error("⚠️ API Key belum diatur! Tambahkan GROQ_API_KEY di .streamlit/secrets.toml atau environment variable.")
         st.stop()
 
     st.session_state.messages.append({"role": "user", "content": prompt})
