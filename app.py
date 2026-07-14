@@ -4,13 +4,12 @@ from groq import Groq
 
 # ==========================================
 # 🛑 AREA KONFIGURASI API KEY GROQ
-GROQ_API_KEY = "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"
+GROQ_API_KEY = "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"
 # ==========================================
 
 # --- 1. KONFIGURASI HALAMAN ---
 st.set_page_config(
-    page_title="Enigma Laptop Zone",
-    page_icon="🏢",
+    page_title="Laptop Zone",
     layout="wide"
 )
 
@@ -23,7 +22,7 @@ except FileNotFoundError:
 
 # --- 3. SIDEBAR (INFORMASI TOKO) ---
 with st.sidebar:
-    st.title("🏢 Enigma Laptop")
+    st.title("Laptop Zone")
     st.caption("Solusi Laptop Terlengkap & Termurah")
     
     st.markdown("---")
@@ -41,7 +40,7 @@ with st.sidebar:
     # Informasi Kontak & Lokasi
     st.subheader("📍 Lokasi & Kontak")
     st.markdown("""
-    **Alamat:** Jl. Raya Banaran, Sekaran, Kec. Gn. Pati, Kota Semarang, Jawa Tengah 50229
+    **Alamat:** Jl. Arjuna, Pendrikan Kidul, Kec. Semarang Tengah, Kota Semarang, Jawa Tengah 50229
     
     **WhatsApp Admin:** 0812-2946-7136
     """)
