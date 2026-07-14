@@ -214,8 +214,6 @@ with st.sidebar:
     st.info("💡 Tips: Tanyakan laptop berdasarkan budget atau kebutuhan (coding/gaming/desain).")
 
 # --- 5. AREA CHAT UTAMA ---
-st.markdown("### Data Tables")
-st.caption("Home")
 st.markdown("#### 👋 Selamat Datang di Enigma Laptop Zone")
 st.write("Saya Joko asisten virtual toko. Silakan tanya stok atau minta rekomendasi laptop!")
 
